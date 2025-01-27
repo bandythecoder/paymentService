@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FIXML xmlns="http://www.finacle.com/fixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.finacle.com/fixml PmtAdd.xsd">
+    <Header>
+        <ResponseHeader>
+            <RequestMessageKey>
+                <GlobalUUID/>
+                <RequestUUID>b1f98603-ce72-6dd1-4e11-c511fb1bec63</RequestUUID>
+                <ServiceRequestId>PmtAdd</ServiceRequestId>
+                <ServiceId>PmtAdd</ServiceId>
+                <ServiceRequestVersion>10.2</ServiceRequestVersion>
+                <ServiceVersion>10.2</ServiceVersion>
+                <ChannelId>COR</ChannelId>
+                <OriginatorId>COR</OriginatorId>
+                <OriginatorInstanceId/>
+                <OriginatorVersion/>
+                <LanguageId>en_US</LanguageId>
+            </RequestMessageKey>
+            <ResponseMessageInfo>
+                <BankId>01</BankId>
+                <TimeZone>GMT+05:30</TimeZone>
+                <MessageDateTime>2025-01-23T15:07:49.999</MessageDateTime>
+            </ResponseMessageInfo>
+            <UBUSTransaction>
+                <Id>null</Id>
+                <Status>FAILED</Status>
+            </UBUSTransaction>
+            <HostTransaction>
+                <Id>E0000</Id>
+                <Status>FAILURE</Status>
+            </HostTransaction>
+            <HostParentTransaction>
+                <Id>null</Id>
+                <Status>null</Status>
+            </HostParentTransaction>
+            <CustomInfo/>
+        </ResponseHeader>
+    </Header>
+    <Body>
+        <Error>
+            <FIBusinessException>
+                <ErrorDetail>
+                    <ErrorCode>E3238</ErrorCode>
+                    <ErrorDesc>Field must be entered.</ErrorDesc>
+                    <ErrorSource>pordPaymentDtls.awiAddrTypeInd</ErrorSource>
+                    <ErrorType>BE</ErrorType>
+                </ErrorDetail>
+                <ErrorDetail>
+                    <ErrorCode>E4221</ErrorCode>
+                    <ErrorDesc>[Invalid Address Type]</ErrorDesc>
+                    <ErrorSource>pordPaymentDtls.benefPartyAddrTypeInd</ErrorSource>
+                    <ErrorType>BE</ErrorType>
+                </ErrorDetail>
+            </FIBusinessException>
+        </Error>
+    </Body>
+</FIXML>
