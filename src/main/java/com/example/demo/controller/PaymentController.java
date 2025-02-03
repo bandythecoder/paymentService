@@ -1,19 +1,22 @@
 package com.example.demo.controller;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.Optional;
+import org.springframework.http.HttpStatus;
 
 @RestController
+@RequestMapping("/process-payment")
 public class PaymentController {
     @Autowired
     private NEFTPaymentService neftPaymentService;
-    @PostMapping("/process-payment")
-    public ResponseEntity<String> processPayment(@RequestBody String iso20022Xml) {
-        Optional<String> paymentResponse = neftPaymentService.makePayment(iso20022Xml);
-        return paymentResponse
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(500).body("Payment processing failed.")); // If not, return a 500 error with a message
+    @SneakyThrows
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public PaymentRequestAPI handlePaymentRequest(@RequestBody PaymentRequestAPI paymentRequest) {
+        // Your logic here
+        neftPaymentService.makePayment(paymentRequest);
+        return paymentRequest;
     }
 }
 

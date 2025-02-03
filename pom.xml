@@ -31,8 +31,8 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>glassfish-repo</id>
-			<url>https://maven.java.net/content/groups/public/</url>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -58,25 +58,39 @@
 		</dependency>
 
 
+			<!-- Jakarta XML Binding (JAXB) -->
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>4.0.0</version>
+			</dependency>
 		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>4.0.0</version>
+			<groupId>jakarta.xml</groupId>
+			<artifactId>jakarta.xml.validation-api</artifactId>
+			<version>2.0.1</version>
 		</dependency>
-
-		<!-- Jakarta XML Bind Implementation -->
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
-			<version>4.0.0</version>
-		</dependency>
+			<!-- Jakarta XML Validation API -->
 
 
 
+			<!-- Jakarta Activation API (Needed for JAXB runtime) -->
+			<dependency>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>2.1.0</version>
+			</dependency>
+
+			<!-- JAXB Runtime -->
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>4.0.0</version>
+			</dependency>
 
 
 
-			<!-- JAXB Runtime (GlassFish implementation) -->
+
+		<!-- JAXB Runtime (GlassFish implementation) -->
 
 
 
@@ -87,6 +101,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>

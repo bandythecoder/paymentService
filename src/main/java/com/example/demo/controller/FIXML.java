@@ -1,414 +1,335 @@
 package com.example.demo.controller;
 
-import lombok.*;
 import jakarta.xml.bind.annotation.*;
+import lombok.*;
 
-@XmlRootElement(name = "FIXML",namespace = "http://www.finacle.com/fixml")
+@XmlRootElement(name = "FIXML")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class FIXML {
-
-    @XmlElement(name = "Header",namespace = "http://www.finacle.com/fixml")
+    @XmlElement(name = "Header")
     private Header header;
-
-    @XmlElement(name = "Body",namespace = "http://www.finacle.com/fixml")
+    @XmlElement(name = "Body")
     private Body body;
 
-    // Nested classes
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class Header {
-
-        @XmlElement(name = "RequestHeader",namespace = "http://www.finacle.com/fixml")
-        private RequestHeader requestHeader;
+    public static FIXML from(PaymentRequestAPI paymentRequestAPI) {
+        return FIXML.builder()
+                .header(Header.builder()
+                        .requestHeader(RequestHeader.builder()
+                                .messageKey(getMessageKey(paymentRequestAPI))
+                                .requestMessageInfo(getMessageInfo(paymentRequestAPI))
+                                .build())
+                        .build())
+                .body(Body.builder()
+                        .pmtAddRequest(getPmtAddRequest(paymentRequestAPI))
+                        .build())
+                .build();
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class RequestHeader {
-
-        @XmlElement(name = "MessageKey",namespace = "http://www.finacle.com/fixml")
-        private MessageKey messageKey;
-
-        @XmlElement(name = "RequestMessageInfo",namespace = "http://www.finacle.com/fixml")
-        private RequestMessageInfo requestMessageInfo;
-
-        @XmlElement(name = "Security",namespace = "http://www.finacle.com/fixml")
-        private Security security;
+    private static PmtAddRequest getPmtAddRequest(PaymentRequestAPI paymentRequestAPI) {
+        return PmtAddRequest.builder()
+                .pmtAddRq(getPmtAddRq(paymentRequestAPI))
+                .pmtAddCustomData(PmtAddCustomData.builder()
+                        .awi(getAwi(paymentRequestAPI))
+                        .senderInfo3("10")
+                        .build())
+                .build();
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class MessageKey {
-
-        @XmlElement(name = "RequestUUID",namespace = "http://www.finacle.com/fixml")
-        private String requestUUID;
-
-        @XmlElement(name = "ServiceRequestId",namespace = "http://www.finacle.com/fixml")
-        private String serviceRequestId;
-
-        @XmlElement(name = "ServiceRequestVersion",namespace = "http://www.finacle.com/fixml")
-        private String serviceRequestVersion;
-
-        @XmlElement(name = "ChannelId",namespace = "http://www.finacle.com/fixml")
-        private String channelId;
-
-        @XmlElement(name = "LanguageId",namespace = "http://www.finacle.com/fixml")
-        private String languageId;
+    private static PmtAddRq getPmtAddRq(PaymentRequestAPI paymentRequestAPI) {
+        return PmtAddRq.builder()
+                .pmtProduct("CT")
+                .drAcct(getDrAcct(paymentRequestAPI))
+                .remitAmt(RemitAmt.builder()
+                        .amountValue(getAmount(paymentRequestAPI).getValue())
+                        .currencyCode(getAmount(paymentRequestAPI).getCurrency())
+                        .build())
+                .crAcct(getCrAcct(paymentRequestAPI))
+                .pmtSysId(getPmtSysId(paymentRequestAPI))
+                .institutionDtls(getInstitutionalDtls(paymentRequestAPI))
+                .build();
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class RequestMessageInfo {
-
-        @XmlElement(name = "BankId",namespace = "http://www.finacle.com/fixml")
-        private String bankId;
-
-        @XmlElement(name = "TimeZone",namespace = "http://www.finacle.com/fixml")
-        private String timeZone;
-
-        @XmlElement(name = "EntityId",namespace = "http://www.finacle.com/fixml")
-        private String entityId;
-
-        @XmlElement(name = "EntityType",namespace = "http://www.finacle.com/fixml")
-        private String entityType;
-
-        @XmlElement(name = "ArmCorrelationId",namespace = "http://www.finacle.com/fixml")
-        private String armCorrelationId;
-
-        @XmlElement(name = "MessageDateTime",namespace = "http://www.finacle.com/fixml")
-        private String messageDateTime;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class Security {
-
-        @XmlElement(name = "Token",namespace = "http://www.finacle.com/fixml")
-        private Token token;
-
-        @XmlElement(name = "FICertToken",namespace = "http://www.finacle.com/fixml")
-        private String fiCertToken;
-
-        @XmlElement(name = "RealUserLoginSessionId",namespace = "http://www.finacle.com/fixml")
-        private String realUserLoginSessionId;
-
-        @XmlElement(name = "RealUser",namespace = "http://www.finacle.com/fixml")
-        private String realUser;
-
-        @XmlElement(name = "RealUserPwd",namespace = "http://www.finacle.com/fixml")
-        private String realUserPwd;
-
-        @XmlElement(name = "SSOTransferToken",namespace = "http://www.finacle.com/fixml")
-        private String ssoTransferToken;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class Token {
-
-        @XmlElement(name = "PasswordToken",namespace = "http://www.finacle.com/fixml")
-        private PasswordToken passwordToken;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class PasswordToken {
-
-        @XmlElement(name = "UserId",namespace = "http://www.finacle.com/fixml")
-        private String userId;
-
-        @XmlElement(name = "Password",namespace = "http://www.finacle.com/fixml")
-        private String password;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class Body {
-
-        @XmlElement(name = "PmtAddRequest",namespace = "http://www.finacle.com/fixml")
-        private PmtAddRequest pmtAddRequest;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class PmtAddRequest {
-
-        @XmlElement(name = "PmtAddRq",namespace = "http://www.finacle.com/fixml")
-        private PmtAddRq pmtAddRq;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class PmtAddRq {
-
-        @XmlElement(name = "PmtProduct",namespace = "http://www.finacle.com/fixml")
-        private String pmtProduct;
-
-        @XmlElement(name = "DrAcct",namespace = "http://www.finacle.com/fixml")
-        private DrAcct drAcct;
-
-        @XmlElement(name = "RemitAmt",namespace = "http://www.finacle.com/fixml")
-        private RemitAmt remitAmt;
-
-        @XmlElement(name = "BeneficiaryDtls",namespace = "http://www.finacle.com/fixml")
-        private BeneficiaryDtls beneficiaryDtls;
-
-        @XmlElement(name = "PmtSysId",namespace = "http://www.finacle.com/fixml")
-        private String pmtSysId;
-
-        @XmlElement(name = "CrAcct",namespace = "http://www.finacle.com/fixml")
-        private CrAcct crAcct;
-
-        @XmlElement(name = "StlmntAcct",namespace = "http://www.finacle.com/fixml")
-        private StlmntAcct stlmntAcct;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class DrAcct {
-
-        @XmlElement(name = "AcctId",namespace = "http://www.finacle.com/fixml")
-        private String acctId;
-
-        @XmlElement(name = "AcctType",namespace = "http://www.finacle.com/fixml")
-        private AcctType acctType;
-
-        @XmlElement(name = "AcctCurr",namespace = "http://www.finacle.com/fixml")
-        private String acctCurr;
-
-        @XmlElement(name = "BankInfo",namespace = "http://www.finacle.com/fixml")
-        private BankInfo bankInfo;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class AcctType {
-
-        @XmlElement(name = "SchmCode",namespace = "http://www.finacle.com/fixml")
-        private String schmCode;
-
-        @XmlElement(name = "SchmType",namespace = "http://www.finacle.com/fixml")
-        private String schmType;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class BankInfo {
-
-        @XmlElement(name = "BankId",namespace = "http://www.finacle.com/fixml")
-        private String bankId;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class RemitAmt {
-
-        @XmlElement(name = "amountValue",namespace = "http://www.finacle.com/fixml")
-        private String amountValue;
-
-        @XmlElement(name = "currencyCode",namespace = "http://www.finacle.com/fixml")
-        private String currencyCode;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class BeneficiaryDtls {
-
-        @XmlElement(name = "AddrTypeInd",namespace = "http://www.finacle.com/fixml")
-        private String addrTypeInd;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class TranFromAcct {
-
-        @XmlElement(name = "AcctId",namespace = "http://www.finacle.com/fixml")
-        private String acctId;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class TranToAcct {
-
-        @XmlElement(name = "AcctId",namespace = "http://www.finacle.com/fixml")
-        private String acctId;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class CrAcct {
-
-        @XmlElement(name = "AcctId",namespace = "http://www.finacle.com/fixml")
-        private String acctId;
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Getter
-    @Builder
-    public static class StlmntAcct {
-
-        @XmlElement(name = "AcctId",namespace = "http://www.finacle.com/fixml")
-        private String acctId;
-    }
-
-    public static FIXML from(PaymentDocument paymentDocument)
+    private static InstitutionDtls getInstitutionalDtls(PaymentRequestAPI paymentRequestAPI)
     {
-        // Construct the FIXML object using the Lombok Builder
-        FIXML fixml = FIXML.builder()
-                .header(FIXML.Header.builder()
-                        .requestHeader(FIXML.RequestHeader.builder()
-                                .messageKey(getMessageKey(paymentDocument))
-                                .requestMessageInfo(getRequestMessageInfo())
-                                .security(getSecurity())
-                                .build())
-                        .build())
-                .body(getBody(paymentDocument))
-                .build();
-
-        // Print or use the constructed FIXML object
-        return fixml;
-    }
-
-    private static Body getBody(PaymentDocument paymentDocument) {
-        return Body.builder()
-                .pmtAddRequest(PmtAddRequest.builder()
-                        .pmtAddRq(PmtAddRq.builder()
-                                .pmtProduct(getTp(paymentDocument))
-                                .drAcct(getDrAcct(paymentDocument))
-                                .remitAmt(getRemitAmt(paymentDocument))
-                                .beneficiaryDtls(getBeneficiaryDtls(paymentDocument))
-                                .pmtSysId(paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getPmtSysId())
-                                .crAcct(getCrAcct(paymentDocument))
-                                .stlmntAcct(getStlmntAcct(paymentDocument))
-                                .build())
-                        .build())
+        return InstitutionDtls.builder()
+                .addrTypeInd(getCrAddrTypeInd(paymentRequestAPI))
                 .build();
     }
 
-    private static BeneficiaryDtls getBeneficiaryDtls(PaymentDocument paymentDocument) {
-        return BeneficiaryDtls.builder()
-                .addrTypeInd(paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getCdTr().getPstlAdr().getAddrTypeInd())
+    private static String getCrAddrTypeInd(PaymentRequestAPI paymentRequestAPI) {
+        return paymentRequestAPI.getPaymentInformation().getPayee().getPostalAddress().getAddressType();
+    }
+
+    private static String getPmtSysId(PaymentRequestAPI paymentRequestAPI)
+    {
+        return paymentRequestAPI.getPaymentInformation().getPaymentMethod();
+    }
+
+    private static String getAwi(PaymentRequestAPI paymentRequestAPI) {
+        return paymentRequestAPI.getPaymentInformation().getPayee().getAccount().getIfscCode();
+    }
+
+    private static PaymentRequestAPI.Amount getAmount(PaymentRequestAPI paymentRequestAPI) {
+        return paymentRequestAPI.getPaymentInformation().getPayer().getAmount();
+    }
+
+    private static Account getDrAcct(PaymentRequestAPI paymentRequestAPI) {
+        return Account.builder()
+                .acctId(getAcctId(paymentRequestAPI))
+                .bankInfo(getPayerBankInfo(paymentRequestAPI))
                 .build();
     }
 
-    private static RemitAmt getRemitAmt(PaymentDocument paymentDocument) {
-        return RemitAmt.builder()
-                .amountValue(paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getInstdAmt().getAmt())
-                .currencyCode(paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getInstdAmt().getCcy())
+    private static Account getCrAcct(PaymentRequestAPI paymentRequestAPI) {
+        return Account.builder()
+                .acctId(getCrAcctId(paymentRequestAPI))
                 .build();
     }
 
-    private static StlmntAcct getStlmntAcct(PaymentDocument paymentDocument) {
-        return StlmntAcct.builder()
-                .acctId(paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getSttlmAcct().getId())
+    private static BankInfo getPayerBankInfo(PaymentRequestAPI paymentRequestAPI) {
+        return BankInfo.builder()
+                .bankId(getBankId(paymentRequestAPI))
                 .build();
     }
 
-    private static CrAcct getCrAcct(PaymentDocument paymentDocument) {
-        return CrAcct.builder()
-                .acctId(getAcctId(paymentDocument))
-                .build();
+    private static String getAcctId(PaymentRequestAPI paymentRequestAPI) {
+        return paymentRequestAPI.
+                getPaymentInformation().
+                getPayer().
+                getAccount().
+                getId();
     }
-
-    private static String getAcctId(PaymentDocument paymentDocument) {
-        return paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getCdtrAcctList().getId();
+    private static String getCrAcctId(PaymentRequestAPI paymentRequestAPI) {
+        return paymentRequestAPI.
+                getPaymentInformation().
+                getPayee().
+                getAccount().
+                getId();
     }
-
-    private static DrAcct getDrAcct(PaymentDocument paymentDocument) {
-        return DrAcct.builder()
-                .acctId(getAccountId(paymentDocument))
-                .acctType(AcctType.builder()
-                        .schmCode(getSchmCode(paymentDocument))
-                        .schmType(getSchmType(paymentDocument))
-                        .build())
-                .acctCurr(getCurrency(paymentDocument))
-                .bankInfo(BankInfo.builder()
-                        .bankId("01")
-                        .build())
-                .build();
-    }
-
-    private static String getSchmCode(PaymentDocument paymentDocument) {
-        return paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getDbtrAcctList().getTp().getSchmCode();
-        //return "";
-    }
-
-    private static String getSchmType(PaymentDocument paymentDocument) {
-        return paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getDbtrAcctList().getTp().getSchmType();
-        //return "";
-    }
-
-    private static String getAccountId(PaymentDocument paymentDocument) {
-        return paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getDbtrAcctList().getId();
-    }
-
-    private static String getCurrency(PaymentDocument paymentDocument) {
-        return paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getDbtrAcctList().getCcy();
-    }
-
-    private static String getTp(PaymentDocument paymentDocument) {
-        return paymentDocument.getCstmrCdtTrfInitn().getPmtInf().getPmtTpInf().getPmtTp();
-    }
-
-    private static Security getSecurity() {
-        return Security.builder()
-                .token(Token.builder()
-                        .passwordToken(PasswordToken.builder()
-                                .userId("")
-                                .password("")
-                                .build())
-                        .build())
-                .fiCertToken("")
-                .realUserLoginSessionId("")
-                .realUser("")
-                .realUserPwd("")
-                .ssoTransferToken("")
-                .build();
-    }
-
-    private static RequestMessageInfo getRequestMessageInfo() {
+    private static RequestMessageInfo getMessageInfo(PaymentRequestAPI paymentRequestAPI) {
         return RequestMessageInfo.builder()
-                .bankId("01")
-                .timeZone("")
-                .entityId("")
-                .entityType("")
-                .armCorrelationId("")
-                .messageDateTime(DateTimeUtil.currentTime())
+                .bankId(getBankId(paymentRequestAPI))
+                .messageDateTime(getMessageDateTime(paymentRequestAPI))
                 .build();
     }
 
-    private static MessageKey getMessageKey(PaymentDocument paymentDocument) {
+    private static String getMessageDateTime(PaymentRequestAPI paymentRequestAPI) {
+        return paymentRequestAPI.getTransaction().getCreationTimestamp();
+    }
+
+    private static String getBankId(PaymentRequestAPI paymentRequestAPI) {
+        return paymentRequestAPI.getPaymentInformation().getPayer().getAccount().getBankInfo().getBankId();
+    }
+
+    private static MessageKey getMessageKey(PaymentRequestAPI paymentRequestAPI) {
         return MessageKey.builder()
-                .requestUUID(paymentDocument.getCstmrCdtTrfInitn().getGrpHdr().getMsgId())
+                .requestUUID(paymentRequestAPI.getTransaction().getId())
                 .serviceRequestId("PmtAdd")
                 .serviceRequestVersion("10.2")
-                .channelId("COR")
-                .languageId("")
+                .channelId("RTS")
                 .build();
     }
 }
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@XmlAccessorType(XmlAccessType.FIELD)
+class Header {
+    @XmlElement(name = "RequestHeader")
+    private RequestHeader requestHeader;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class RequestHeader {
+    @XmlElement(name = "MessageKey")
+    private MessageKey messageKey;
+
+    @XmlElement(name = "RequestMessageInfo")
+    private RequestMessageInfo requestMessageInfo;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class MessageKey {
+    @XmlElement(name = "RequestUUID")
+    private String requestUUID;
+
+    @XmlElement(name = "ServiceRequestId")
+    private String serviceRequestId;
+
+    @XmlElement(name = "ServiceRequestVersion")
+    private String serviceRequestVersion;
+
+    @XmlElement(name = "ChannelId")
+    private String channelId;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class RequestMessageInfo {
+    @XmlElement(name = "BankId")
+    private String bankId;
+
+    @XmlElement(name = "MessageDateTime")
+    private String messageDateTime;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class Body {
+    @XmlElement(name = "PmtAddRequest")
+    private PmtAddRequest pmtAddRequest;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class PmtAddRequest {
+    @XmlElement(name = "PmtAddRq")
+    private PmtAddRq pmtAddRq;
+
+    @XmlElement(name = "PmtAdd_CustomData")
+    private PmtAddCustomData pmtAddCustomData;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class PmtAddRq {
+    @XmlElement(name = "PmtProduct")
+    private String pmtProduct;
+
+    @XmlElement(name = "DrAcct")
+    private Account drAcct;
+
+    @XmlElement(name = "RemitAmt")
+    private RemitAmt remitAmt;
+
+    @XmlElement(name = "ChrgAcct")
+    private Account chrgAcct;
+
+    @XmlElement(name = "BeneficiaryDtls")
+    private BeneficiaryDtls beneficiaryDtls;
+
+    @XmlElement(name = "InstitutionDtls")
+    private InstitutionDtls institutionDtls;
+
+    @XmlElement(name = "PmtSysId")
+    private String pmtSysId;
+
+    @XmlElement(name = "CrAcct")
+    private Account crAcct;
+
+    @XmlElement(name = "StlmntAcct")
+    private Account stlmntAcct;
+}
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class Account {
+    @XmlElement(name = "AcctId")
+    private String acctId;
+
+    @XmlElement(name = "BankInfo")
+    private BankInfo bankInfo;
+}
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class BankInfo {
+    @XmlElement(name = "Name")
+    private String name;
+
+    @XmlElement(name = "BankId")
+    private String bankId;
+
+    @XmlElement(name = "BranchId")
+    private String branchId;
+
+    @XmlElement(name = "BranchName")
+    private String branchName;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class RemitAmt {
+    @XmlElement(name = "amountValue")
+    private double amountValue;
+
+    @XmlElement(name = "currencyCode")
+    private String currencyCode;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class BeneficiaryDtls {
+    @XmlElement(name = "AddrTypeInd")
+    private String addrTypeInd;
+
+    @XmlElement(name = "Name")
+    private String name;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class InstitutionDtls {
+    @XmlElement(name = "AddrTypeInd")
+    private String addrTypeInd;
+
+    @XmlElement(name = "Name")
+    private String name;
+}
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+class PmtAddCustomData {
+    @XmlElement(name = "AWI")
+    private String awi;
+
+    @XmlElement(name = "SENDERINFO3")
+    private String senderInfo3;
+
+    @XmlElement(name = "REMITINFO1")
+    private String remitInfo1;
+
+    @XmlElement(name = "REMITINFO2")
+    private String remitInfo2;
+
+    @XmlElement(name = "REMITINFO3")
+    private String remitInfo3;
+
+    @XmlElement(name = "REMITINFO4")
+    private String remitInfo4;
+
+    @XmlElement(name = "SENDERINFO4")
+    private String senderInfo4;  // Updated to String
+
+    @XmlElement(name = "SENDERINFO1")
+    private String senderInfo1;
+
+    @XmlElement(name = "SENDERINFO2")
+    private String senderInfo2;
+
+    @XmlElement(name = "SENDERINFO5")
+    private String senderInfo5;
+
+    @XmlElement(name = "SENDERINFO6")
+    private String senderInfo6;
+
+}
+
+
 
